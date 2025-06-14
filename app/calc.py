@@ -1,33 +1,55 @@
+import math
+
 class Calculator:
-    def add(self, x, y):
-        self.check_types(x, y)
-        return x + y
 
-    def substract(self, x, y):
-        self.check_types(x, y)
-        return x - y
+    @staticmethod
+    def add(a, b):
+        Calculator._validate_numbers(a, b)
+        return a + b
 
-    def multiply(self, x, y):
-        self.check_types(x, y)
-        return x * y
+    @staticmethod
+    def subtract(a, b):
+        Calculator._validate_numbers(a, b)
+        return a - b
 
-    def divide(self, x, y):
-        self.check_types(x, y)
-        if y == 0:
-            raise TypeError("Division by zero is not possible")
+    @staticmethod
+    def multiply(a, b):
+        Calculator._validate_numbers(a, b)
+        return a * b
 
-        return x / y
+    @staticmethod
+    def divide(a, b):
+        Calculator._validate_numbers(a, b)
+        if b == 0:
+            raise TypeError("Division by zero is not allowed")
+        return a / b
 
-    def power(self, x, y):
-        self.check_types(x, y)
-        return x ** y
+    @staticmethod
+    def power(a, b):
+        Calculator._validate_numbers(a, b)
+        return math.pow(a, b)
 
-    def check_types(self, x, y):
-        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
-            raise TypeError("Parameters must be numbers")
+    @staticmethod
+    def sqrt(a):
+        Calculator._validate_number(a)
+        if a < 0:
+            raise TypeError("Cannot take square root of negative number")
+        return math.sqrt(a)
 
+    @staticmethod
+    def log10(a):
+        Calculator._validate_number(a)
+        if a <= 0:
+            raise TypeError("Logarithm undefined for zero or negative numbers")
+        return math.log10(a)
 
-if __name__ == "__main__":  # pragma: no cover
-    calc = Calculator()
-    result = calc.add(2, 2)
-    print(result)
+    @staticmethod
+    def _validate_numbers(*args):
+        for arg in args:
+            if not isinstance(arg, (int, float)):
+                raise TypeError("Parameters must be numbers")
+
+    @staticmethod
+    def _validate_number(arg):
+        if not isinstance(arg, (int, float)):
+            raise TypeError("Parameter must be a number")
