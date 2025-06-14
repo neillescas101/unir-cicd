@@ -1,33 +1,47 @@
-import http.client
+from flask import Flask, jsonify
+from calc import Calculator
 
-from flask import Flask
+app = Flask(__name__)
 
-from app import util
-from app.calc import Calculator
+@app.route("/calc/add/<float:a>/<float:b>", methods=["GET"])
+def add(a, b):
+    return jsonify({"result": Calculator.add(a, b)})
 
-CALCULATOR = Calculator()
-api_application = Flask(__name__)
-HEADERS = {"Content-Type": "text/plain", "Access-Control-Allow-Origin": "*"}
+@app.route("/calc/subtract/<float:a>/<float:b>", methods=["GET"])
+def subtract(a, b):
+    return jsonify({"result": Calculator.subtract(a, b)})
 
+@app.route("/calc/multiply/<float:a>/<float:b>", methods=["GET"])
+def multiply(a, b):
+    return jsonify({"result": Calculator.multiply(a, b)})
 
-@api_application.route("/")
-def hello():
-    return "Hello from The Calculator!\n"
-
-
-@api_application.route("/calc/add/<op_1>/<op_2>", methods=["GET"])
-def add(op_1, op_2):
+@app.route("/calc/divide/<float:a>/<float:b>", methods=["GET"])
+def divide(a, b):
     try:
-        num_1, num_2 = util.convert_to_number(op_1), util.convert_to_number(op_2)
-        return ("{}".format(CALCULATOR.add(num_1, num_2)), http.client.OK, HEADERS)
+        result = Calculator.divide(a, b)
+        return jsonify({"result": result})
     except TypeError as e:
-        return (str(e), http.client.BAD_REQUEST, HEADERS)
+        return jsonify({"error": str(e)}), 400
 
+@app.route("/calc/power/<float:a>/<float:b>", methods=["GET"])
+def power(a, b):
+    return jsonify({"result": Calculator.power(a, b)})
 
-@api_application.route("/calc/substract/<op_1>/<op_2>", methods=["GET"])
-def substract(op_1, op_2):
+@app.route("/calc/sqrt/<float:a>", methods=["GET"])
+def sqrt(a):
     try:
-        num_1, num_2 = util.convert_to_number(op_1), util.convert_to_number(op_2)
-        return ("{}".format(CALCULATOR.substract(num_1, num_2)), http.client.OK, HEADERS)
+        result = Calculator.sqrt(a)
+        return jsonify({"result": result})
     except TypeError as e:
-        return (str(e), http.client.BAD_REQUEST, HEADERS)
+        return jsonify({"error": str(e)}), 400
+
+@app.route("/calc/log10/<float:a>", methods=["GET"])
+def log10(a):
+    try:
+        result = Calculator.log10(a)
+        return jsonify({"result": result})
+    except TypeError as e:
+        return jsonify({"error": str(e)}), 400
+
+if __name__ == '__main__':
+    app.run(debug=True)

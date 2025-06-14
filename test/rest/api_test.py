@@ -1,23 +1,65 @@
-import http.client
-import os
 import unittest
-from urllib.request import urlopen
+from api import app
 
-import pytest
+class TestCalcAPI(unittest.TestCase):
 
-BASE_URL = os.environ.get("BASE_URL")
-DEFAULT_TIMEOUT = 2  # in secs
-
-
-@pytest.mark.api
-class TestApi(unittest.TestCase):
     def setUp(self):
-        self.assertIsNotNone(BASE_URL, "URL no configurada")
-        self.assertTrue(len(BASE_URL) > 8, "URL no configurada")
+        self.client = app.test_client()
 
-    def test_api_add(self):
-        url = f"{BASE_URL}/calc/add/2/2"
-        response = urlopen(url, timeout=DEFAULT_TIMEOUT)
-        self.assertEqual(
-            response.status, http.client.OK, f"Error en la petición API a {url}"
-        )
+    def test_add(self):
+        response = self.client.get('/calc/add/2/3')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['result'], 5)
+
+    def test_subtract(self):
+        response = self.client.get('/calc/subtract/5/2')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['result'], 3)
+
+    def test_multiply(self):
+        response = self.client.get('/calc/multiply/3/4')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['result'], 12)
+
+    def test_divide_success(self):
+        response = self.client.get('/calc/divide/10/2')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['result'], 5)
+
+    def test_divide_fail(self):
+        response = self.client.get('/calc/divide/10/0')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.json)
+
+    def test_power(self):
+        response = self.client.get('/calc/power/2/3')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['result'], 8)
+
+    def test_sqrt_success(self):
+        response = self.client.get('/calc/sqrt/9')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['result'], 3)
+
+    def test_sqrt_fail(self):
+        response = self.client.get('/calc/sqrt/-1')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.json)
+
+    def test_log10_success(self):
+        response = self.client.get('/calc/log10/100')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['result'], 2)
+
+    def test_log10_fail_zero(self):
+        response = self.client.get('/calc/log10/0')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.json)
+
+    def test_log10_fail_negative(self):
+        response = self.client.get('/calc/log10/-10')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.json)
+
+if __name__ == '__main__':
+    unittest.main()

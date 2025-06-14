@@ -1,44 +1,52 @@
 import unittest
-import pytest
+from calc import Calculator
+import math
 
-from app.calc import Calculator
+class TestCalculator(unittest.TestCase):
 
+    def test_add(self):
+        self.assertEqual(Calculator.add(1, 2), 3)
+        self.assertEqual(Calculator.add(-1, 1), 0)
+        with self.assertRaises(TypeError):
+            Calculator.add('a', 2)
 
-@pytest.mark.unit
-class TestCalculate(unittest.TestCase):
-    def setUp(self):
-        self.calc = Calculator()
+    def test_subtract(self):
+        self.assertEqual(Calculator.subtract(5, 3), 2)
+        with self.assertRaises(TypeError):
+            Calculator.subtract(1, 'b')
 
-    def test_add_method_returns_correct_result(self):
-        self.assertEqual(4, self.calc.add(2, 2))
-        self.assertEqual(0, self.calc.add(2, -2))
-        self.assertEqual(0, self.calc.add(-2, 2))
-        self.assertEqual(1, self.calc.add(1, 0))
+    def test_multiply(self):
+        self.assertEqual(Calculator.multiply(4, 3), 12)
+        with self.assertRaises(TypeError):
+            Calculator.multiply(4, None)
 
-    def test_divide_method_returns_correct_result(self):
-        self.assertEqual(1, self.calc.divide(2, 2))
-        self.assertEqual(1.5, self.calc.divide(3, 2))
+    def test_divide(self):
+        self.assertEqual(Calculator.divide(10, 2), 5)
+        with self.assertRaises(TypeError):
+            Calculator.divide(10, 0)
+        with self.assertRaises(TypeError):
+            Calculator.divide('10', 2)
 
-    def test_add_method_fails_with_nan_parameter(self):
-        self.assertRaises(TypeError, self.calc.add, "2", 2)
-        self.assertRaises(TypeError, self.calc.add, 2, "2")
-        self.assertRaises(TypeError, self.calc.add, "2", "2")
-        self.assertRaises(TypeError, self.calc.add, None, 2)
-        self.assertRaises(TypeError, self.calc.add, 2, None)
-        self.assertRaises(TypeError, self.calc.add, object(), 2)
-        self.assertRaises(TypeError, self.calc.add, 2, object())
+    def test_power(self):
+        self.assertAlmostEqual(Calculator.power(2, 3), 8)
+        with self.assertRaises(TypeError):
+            Calculator.power(2, 'x')
 
-    def test_divide_method_fails_with_nan_parameter(self):
-        self.assertRaises(TypeError, self.calc.divide, "2", 2)
-        self.assertRaises(TypeError, self.calc.divide, 2, "2")
-        self.assertRaises(TypeError, self.calc.divide, "2", "2")
+    def test_sqrt(self):
+        self.assertEqual(Calculator.sqrt(9), 3)
+        with self.assertRaises(TypeError):
+            Calculator.sqrt(-1)
+        with self.assertRaises(TypeError):
+            Calculator.sqrt('a')
 
-    def test_divide_method_fails_with_division_by_zero(self):
-        self.assertRaises(TypeError, self.calc.divide, 2, 0)
-        self.assertRaises(TypeError, self.calc.divide, 2, -0)
-        self.assertRaises(TypeError, self.calc.divide, 0, 0)
-        self.assertRaises(TypeError, self.calc.divide, "0", 0)
+    def test_log10(self):
+        self.assertEqual(Calculator.log10(100), 2)
+        with self.assertRaises(TypeError):
+            Calculator.log10(0)
+        with self.assertRaises(TypeError):
+            Calculator.log10(-10)
+        with self.assertRaises(TypeError):
+            Calculator.log10('a')
 
-
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == '__main__':
     unittest.main()
